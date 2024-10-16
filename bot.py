@@ -224,32 +224,31 @@ async def go(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def change_params(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info('User %s decided to play with parameters', update.message.from_user)
-    match update.message.text:
-        case 'Возраст начала':
-            text = 'С какого возраста начинаешь копить?'
-            context.user_data['category'] = 'age_start_upd'
-        case 'Возраст ухода с работы':
-            text = 'С какого возраста хочешь перестать работать?'
-            context.user_data['category'] = 'age_finish_upd'
-        case 'Начальные инвестиции':
-            text = 'Какую сумму в USD можешь инвестировать сразу?'
-            context.user_data['category'] = 'invest_start_upd'
-        case 'Ежегодные инвестиции':
-            text = 'Сколько будешь откладывать в год?'
-            context.user_data['category'] = 'annual_invest_upd'
-        case 'Ежегодные траты на пенсии':
-            text = 'Сколько ты тратишь в год сейчас? Исходим из того, что твои расходы не должны сильно измениться в старости, чтобы не чувствовать дискомфорта.'
-            context.user_data['category'] = 'retire_expense_upd'
-        case 'Риск инвестиций':
-            text = 'Выбери уровень риска твоих инвестиций'
-            await update.message.reply_text(
-                text,
-                reply_markup=risk_markup
-            )
-            context.user_data['category'] = 'risk_level_upd'
-            return 'choose'
-        case _:
-            text = ''
+    if update.message.text == 'Возраст начала':
+        text = 'С какого возраста начинаешь копить?'
+        context.user_data['category'] = 'age_start_upd'
+    elif update.message.text == 'Возраст ухода с работы':
+        text = 'С какого возраста хочешь перестать работать?'
+        context.user_data['category'] = 'age_finish_upd'
+    elif update.message.text == 'Начальные инвестиции':
+        text = 'Какую сумму в USD можешь инвестировать сразу?'
+        context.user_data['category'] = 'invest_start_upd'
+    elif update.message.text == 'Ежегодные инвестиции':
+        text = 'Сколько будешь откладывать в год?'
+        context.user_data['category'] = 'annual_invest_upd'
+    elif update.message.text == 'Ежегодные траты на пенсии':
+        text = 'Сколько ты тратишь в год сейчас? Исходим из того, что твои расходы не должны сильно измениться в старости, чтобы не чувствовать дискомфорта.'
+        context.user_data['category'] = 'retire_expense_upd'
+    elif update.message.text == 'Риск инвестиций':
+        text = 'Выбери уровень риска твоих инвестиций'
+        await update.message.reply_text(
+            text,
+            reply_markup=risk_markup
+        )
+        context.user_data['category'] = 'risk_level_upd'
+        return 'choose'
+    else:
+        text = ''
 
     await update.message.reply_text(
         text
@@ -259,70 +258,70 @@ async def change_params(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def apply_change(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text
-    match context.user_data['category']:
-        case 'age_start_upd':
-            try:
-                context.user_data['age_start'] = int(user_text)
-            except ValueError:
-                logger.error('Somebody entered %s as %s', user_text, context.user_data['category'])
-                await update.message.reply_text(
-                    f'А ты, видимо, тестер\n'
-                    'Можешь начать с начала /start'
-                )
-                context.user_data.clear()
-                return ConversationHandler.END
-            logger.info('%s updated start age', update.message.from_user)
-        case 'age_finish_upd':
-            try:
-                context.user_data['age_finish'] = int(user_text)
-            except ValueError:
-                logger.error('Somebody entered %s as %s', user_text, context.user_data['category'])
-                await update.message.reply_text(
-                    f'А ты, видимо, тестер\n'
-                    'Можешь начать с начала /start'
-                )
-                context.user_data.clear()
-                return ConversationHandler.END
-            logger.info('%s updated finish age', update.message.from_user)
-        case 'invest_start_upd':
-            try:
-                context.user_data['invest_start'] = int(user_text)
-            except ValueError:
-                logger.error('Somebody entered %s as %s', user_text, context.user_data['category'])
-                await update.message.reply_text(
-                    f'А ты, видимо, тестер\n'
-                    'Можешь начать с начала /start'
-                )
-                context.user_data.clear()
-                return ConversationHandler.END
-            logger.info('%s updated invest start', update.message.from_user)
-        case 'annual_invest_upd':
-            try:
-                context.user_data['annual_invest'] = int(user_text)
-            except ValueError:
-                logger.error('Somebody entered %s as %s', user_text, context.user_data['category'])
-                await update.message.reply_text(
-                    f'А ты, видимо, тестер\n'
-                    'Можешь начать с начала /start'
-                )
-                context.user_data.clear()
-                return ConversationHandler.END
-            logger.info('%s updated annual invest', update.message.from_user)
-        case 'retire_expense_upd':
-            try:
-                context.user_data['retire_expense'] = int(user_text)
-            except ValueError:
-                logger.error('Somebody entered %s as %s', user_text, context.user_data['category'])
-                await update.message.reply_text(
-                    f'А ты, видимо, тестер\n'
-                    'Можешь начать с начала /start'
-                )
-                context.user_data.clear()
-                return ConversationHandler.END
-            logger.info('%s updated retired expenses', update.message.from_user)
-        case 'risk_level_upd':
-            context.user_data['risk_level'] = user_text
-            logger.info('%s updated risk level', update.message.from_user)
+    if context.user_data['category'] == 'age_start_upd':
+        try:
+            context.user_data['age_start'] = int(user_text)
+        except ValueError:
+            logger.error('Somebody entered %s as %s', user_text, context.user_data['category'])
+            await update.message.reply_text(
+                f'А ты, видимо, тестер\n'
+                'Можешь начать с начала /start'
+            )
+            context.user_data.clear()
+            return ConversationHandler.END
+        logger.info('%s updated start age', update.message.from_user)
+    elif context.user_data['category'] == 'age_finish_upd':
+        try:
+            context.user_data['age_finish'] = int(user_text)
+        except ValueError:
+            logger.error('Somebody entered %s as %s', user_text, context.user_data['category'])
+            await update.message.reply_text(
+                f'А ты, видимо, тестер\n'
+                'Можешь начать с начала /start'
+            )
+            context.user_data.clear()
+            return ConversationHandler.END
+        logger.info('%s updated finish age', update.message.from_user)
+    elif context.user_data['category'] == 'invest_start_upd':
+        try:
+            context.user_data['invest_start'] = int(user_text)
+        except ValueError:
+            logger.error('Somebody entered %s as %s', user_text, context.user_data['category'])
+            await update.message.reply_text(
+                f'А ты, видимо, тестер\n'
+                'Можешь начать с начала /start'
+            )
+            context.user_data.clear()
+            return ConversationHandler.END
+        logger.info('%s updated invest start', update.message.from_user)
+    elif context.user_data['category'] == 'annual_invest_upd':
+        try:
+            context.user_data['annual_invest'] = int(user_text)
+        except ValueError:
+            logger.error('Somebody entered %s as %s', user_text, context.user_data['category'])
+            await update.message.reply_text(
+                f'А ты, видимо, тестер\n'
+                'Можешь начать с начала /start'
+            )
+            context.user_data.clear()
+            return ConversationHandler.END
+        logger.info('%s updated annual invest', update.message.from_user)
+    elif context.user_data['category'] == 'retire_expense_upd':
+        try:
+            context.user_data['retire_expense'] = int(user_text)
+        except ValueError:
+            logger.error('Somebody entered %s as %s', user_text, context.user_data['category'])
+            await update.message.reply_text(
+                f'А ты, видимо, тестер\n'
+                'Можешь начать с начала /start'
+            )
+            context.user_data.clear()
+            return ConversationHandler.END
+        logger.info('%s updated retired expenses', update.message.from_user)
+    elif context.user_data['category'] == 'risk_level_upd':
+        context.user_data['risk_level'] = user_text
+        logger.info('%s updated risk level', update.message.from_user)
+
     del context.user_data['category']
     await update.message.reply_text(
         'Сейчас данные такие:\n'
