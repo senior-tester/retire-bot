@@ -71,7 +71,7 @@ async def start_calc(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def bye(update: Update, context):
     await update.message.reply_text(
-        'Ок\\. Если хочешь начать заново, введи команду /start\n\n'
+        'Этот диалог завершен\\. Если хочешь начать заново, введи команду /start\n\n'
         'Этот бот создан совместными усилиями '
         '[Евгения Окулика](https://t.me/+l-5jHNJY2ClhNTIy) и [Николая Сащеко](https://t.me/+eufDqPUVkj1kNGVi)',
         parse_mode=ParseMode.MARKDOWN_V2,
