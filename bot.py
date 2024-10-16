@@ -1,5 +1,6 @@
 import logging
 from telegram import Update, ReplyKeyboardMarkup
+from telegram.error import BadRequest
 from telegram.constants import ParseMode
 from telegram.ext import (
     Application,
@@ -205,7 +206,17 @@ async def go(update: Update, context: ContextTypes.DEFAULT_TYPE):
     result.insert(0, '<pre>')
     result.append('</pre>')
     reply = '\n'.join(result)
-    await update.message.reply_html(reply)
+    try:
+        await update.message.reply_html(reply)
+    except BadRequest:
+        await update.message.reply_html(
+            'Данных слишком много - телеграм не может отобразить такое длинное сообщение\n\n'
+            'Попробуйте изменить возраст начала и окончания и пересчитать.'
+        )
+        logger.exception(
+            'Слишком большой результат. Возраст старта %s , возраст окончания %s',
+            context.user_data['age_start'], context.user_data['age_finish']
+        )
     logger.info('Data calculated successfully for user %s', update.message.from_user)
     await update.message.reply_text(
         'Подсчет выполнен на основании этих данных:\n'
