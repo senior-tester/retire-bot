@@ -2,7 +2,7 @@ from inflation import get_total_inflation_rate
 
 
 def calculate(start_age, retire_age, invest_start, annual_invest, annual_retired_expenses, risk_level):
-    profit_percent = 10 if risk_level == 'Высокий 10%' else 7.5 if risk_level == 'Средний 7.5%' else 5
+    profit_percent = 10 if risk_level == 'Высокий 10%' else 7.5 if risk_level == 'Средний 7.5%' else 5 if risk_level == 'Низкий 5%' else 1
     max_years = 100
     inflation = get_total_inflation_rate(days=365)
     invest_account = 0 + invest_start

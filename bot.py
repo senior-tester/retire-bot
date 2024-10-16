@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 start_buttons = [['Начать', 'Отказаться']]
 start_markup = ReplyKeyboardMarkup(start_buttons, one_time_keyboard=True)
 
-risk_buttons = [['Высокий 10%', 'Низкий 5%'], ['Средний 7.5%']]
+risk_buttons = [['Высокий 10%', 'Средний 7.5%'], ['Низкий 5%', 'Депозит под 1%']]
 risk_markup = ReplyKeyboardMarkup(risk_buttons, one_time_keyboard=True)
 
 go_buttons = [['Рассчитать']]
@@ -355,7 +355,7 @@ conv_handler = ConversationHandler(
         'choose': [
             MessageHandler(filters.Regex('^Начать$'), start_calc),
             MessageHandler(filters.Regex('^(Рассчитать|Пересчитать)$'), go),
-            MessageHandler(filters.Regex('^(Высокий 10%|Низкий 5%|Средний 7.5%)$'), info),
+            MessageHandler(filters.Regex('^(Высокий 10%|Низкий 5%|Средний 7.5%|Депозит под 1%)$'), info),
             MessageHandler(
                 filters.Regex(
                     '^(Возраст начала|Возраст ухода с работы|Начальные инвестиции|Ежегодные инвестиции|Ежегодные траты на пенсии|Риск инвестиций)$'
