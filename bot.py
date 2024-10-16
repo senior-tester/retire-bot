@@ -1,4 +1,5 @@
 import logging
+import os
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.error import BadRequest
 from telegram.constants import ParseMode
@@ -42,7 +43,14 @@ finish_markup = ReplyKeyboardMarkup(finish_buttons, one_time_keyboard=True)
 
 
 async def start(update: Update, context):
-    logger.info('Starting session for user %s', update.message.from_user)
+    if os.path.exists('sessions_log'):
+        with open('sessions_log', 'r') as sessions:
+            users_qty = len(sessions.readlines())
+    else:
+        users_qty = 0
+    logger.info('Starting session for user %s: %s', users_qty, update.message.from_user)
+    with open('sessions_log', 'a') as sessions:
+        sessions.write(f'{str(users_qty)}: {str(update.message.from_user)}\n')
     await update.message.reply_text(
         'Привет. Давай посчитаем сколько тебе нужно на то, чтобы не работать и когда ты сможешь к этому прийти',
         reply_markup=start_markup
