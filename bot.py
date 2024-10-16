@@ -52,7 +52,10 @@ async def start(update: Update, context):
     with open('sessions_log', 'a') as sessions:
         sessions.write(f'{str(users_qty)}: {str(update.message.from_user)}\n')
     await update.message.reply_text(
-        'Привет. Давай посчитаем сколько тебе нужно на то, чтобы не работать и когда ты сможешь к этому прийти',
+        'Этот бот создан совместными усилиями '
+        '[Николая Сащеко](https://t.me/+eufDqPUVkj1kNGVi) и [Евгения Окулика](https://t.me/+l-5jHNJY2ClhNTIy)\n\n'
+        'Привет\\. Давай посчитаем сколько тебе нужно на то, чтобы не работать и когда ты сможешь к этому прийти',
+        parse_mode=ParseMode.MARKDOWN_V2,
         reply_markup=start_markup
     )
     return 'choose'
@@ -68,7 +71,10 @@ async def start_calc(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def bye(update: Update, context):
     await update.message.reply_text(
-        'Ок. Если хочешь начать заново, введи команду /start'
+        'Ок\\. Если хочешь начать заново, введи команду /start\n\n'
+        'Этот бот создан совместными усилиями '
+        '[Евгения Окулика](https://t.me/+l-5jHNJY2ClhNTIy) и [Николая Сащеко](https://t.me/+eufDqPUVkj1kNGVi)',
+        parse_mode=ParseMode.MARKDOWN_V2,
     )
     logger.info('Stopping session on user %s', update.message.from_user)
     return ConversationHandler.END
@@ -382,12 +388,16 @@ conv_handler = ConversationHandler(
                 ), info
             ),
             MessageHandler(filters.Regex('^(Рассчитать|Пересчитать)$'), go)
-        ]
+        ],
+        ConversationHandler.TIMEOUT: [MessageHandler(filters.TEXT & ~filters.COMMAND, bye)]
     },
-    fallbacks=[MessageHandler(filters.Regex('^(Отказаться|Закончить)$'), bye)]
+    fallbacks=[
+        MessageHandler(filters.Regex('^(Отказаться|Закончить)$'), bye),
+    ],
+    conversation_timeout=900
 )
 
 
 application = Application.builder().token(TG_API_KEY).build()
 application.add_handler(conv_handler)
-application.run_polling()
+application.run_polling(allowed_updates=Update.ALL_TYPES)
